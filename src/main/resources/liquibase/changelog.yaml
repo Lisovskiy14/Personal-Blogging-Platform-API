@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/db.changelog-user.yaml
+  - include:
+      file: liquibase/db.changelog-tag.yaml
+  - include:
+      file: liquibase/db.changelog-post.yaml
+  - include:
+      file: liquibase/db.changelog-comment.yaml

@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+      id: blogging-2
+      author: lisovskiy14
+      changes:
+
+        - createTable:
+            tableName: tags
+            columns:
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: tags
+            columnNames: slug
+            constraintName: uq_tags_slug
