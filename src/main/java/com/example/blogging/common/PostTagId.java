@@ -10,7 +10,7 @@ import java.util.UUID;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostTagID implements Serializable {
+public class PostTagId implements Serializable {
     private UUID postId;
-    private String tagSlug;
+    private Long tagId;
 }

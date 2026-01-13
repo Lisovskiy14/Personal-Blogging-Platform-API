@@ -16,5 +16,7 @@ public class EditPostRequestDto {
 
     String imageUrl;
 
+    boolean toAddTags;
+
     Set<String> tagSlugs;
 }

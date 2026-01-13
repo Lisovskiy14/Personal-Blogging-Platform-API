@@ -3,10 +3,21 @@ databaseChangeLog:
       id: blogging-2
       author: lisovskiy14
       changes:
+        - createSequence:
+            sequenceName: tags_seq
+            startValue: 1
+            incrementBy: 50
+            dataType: BIGINT
 
         - createTable:
             tableName: tags
             columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueSequenceNextVal: tags_seq
+                  constraints:
+                    primaryKey: true
               - column:
                   name: name
                   type: VARCHAR(255)
