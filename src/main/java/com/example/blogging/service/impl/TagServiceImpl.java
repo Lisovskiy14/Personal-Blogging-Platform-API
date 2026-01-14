@@ -29,9 +29,9 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional(readOnly = true)
-    public Tag getTagBySlug(String slug) {
-        TagEntity tagEntity = tagRepository.findBySlug(slug)
-                .orElseThrow(() -> new TagNotFoundException(slug));
+    public Tag getTagById(Long tagId) {
+        TagEntity tagEntity = tagRepository.findById(tagId)
+                .orElseThrow(() -> new TagNotFoundException(tagId));
         return tagEntityMapper.toTag(tagEntity);
     }
 
@@ -49,7 +49,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public void deleteTagBySlug(String slug) {
-        tagRepository.deleteBySlug(slug);
+    public void deleteTagById(Long tagId) {
+        tagRepository.deleteById(tagId);
     }
 }

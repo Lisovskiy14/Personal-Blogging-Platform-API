@@ -66,7 +66,7 @@ public class PostServiceImpl implements PostService {
                 .imageUrl(postRequestDto.getImageUrl())
                 .build();
 
-        Set<TagEntity> tagEntitySet = tagRepository.findAllBySlugIn(postRequestDto.getTagSlugs());
+        Set<TagEntity> tagEntitySet = tagRepository.findAllByIdIn(postRequestDto.getTagIds());
 
         Set<PostTagEntity> postTagEntitySet = new HashSet<>();
         for (TagEntity tagEntity : tagEntitySet) {
@@ -104,9 +104,9 @@ public class PostServiceImpl implements PostService {
         if (editPostRequestDto.getImageUrl() != null) {
             postEntity.setImageUrl(editPostRequestDto.getImageUrl());
         }
-        Set<String> tagSlugs = editPostRequestDto.getTagSlugs();
-        if (tagSlugs != null && !tagSlugs.isEmpty()) {
-            Set<TagEntity> tagEntitySet = tagRepository.findAllBySlugIn(tagSlugs);
+        Set<Long> tagIds = editPostRequestDto.getTagIds();
+        if (tagIds != null && !tagIds.isEmpty()) {
+            Set<TagEntity> tagEntitySet = tagRepository.findAllByIdIn(tagIds);
             if (editPostRequestDto.isToAddTags()) {
                 for (TagEntity tagEntity : tagEntitySet) {
                     postEntity.getTags().add(PostTagEntity.builder()

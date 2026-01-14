@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 public class Comment {
-    private UUID uuid;
+    private UUID id;
     private User author;
     private Post post;
     private String content;

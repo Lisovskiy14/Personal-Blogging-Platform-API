@@ -6,6 +6,7 @@ import com.example.blogging.dto.comment.CommentRequestDto;
 import com.example.blogging.dto.comment.CommentResponseDto;
 import com.example.blogging.service.CommentService;
 import com.example.blogging.web.mapper.CommentWebMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +46,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto commentRequestDto) {
+    public ResponseEntity<CommentResponseDto> createComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(commentWebMapper.toResponseDto(commentService.createComment(commentRequestDto)));

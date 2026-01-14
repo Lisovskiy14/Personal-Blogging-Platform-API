@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class TagEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_seq_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tags_seq_gen")
     @SequenceGenerator(
-            name = "tag_seq_gen",
-            sequenceName = "tag_seq",
+            name = "tags_seq_gen",
+            sequenceName = "tags_seq",
             allocationSize = 1
     )
     private Long id;

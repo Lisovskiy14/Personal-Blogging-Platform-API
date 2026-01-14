@@ -1,6 +1,7 @@
 package com.example.blogging.dto.comment;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Value;
 
@@ -9,10 +10,10 @@ import java.util.UUID;
 @Value
 public class CommentRequestDto {
 
-    @NotBlank(message = "is required")
+    @NotNull(message = "is required")
     UUID authorId;
 
-    @NotBlank(message = "is required")
+    @NotNull(message = "is required")
     UUID postId;
 
     @NotBlank(message = "is required")

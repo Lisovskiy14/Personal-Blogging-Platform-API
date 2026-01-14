@@ -5,6 +5,7 @@ import com.example.blogging.dto.tag.TagResponseDto;
 import com.example.blogging.dto.tag.TagSetResponseDto;
 import com.example.blogging.service.TagService;
 import com.example.blogging.web.mapper.TagWebMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,23 +32,23 @@ public class TagController {
                 ));
     }
 
-    @GetMapping("/{slug}")
-    public ResponseEntity<TagResponseDto> getTagBySlug(@PathVariable String slug) {
+    @GetMapping("/{tagId}")
+    public ResponseEntity<TagResponseDto> getTagById(@PathVariable Long tagId) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(tagWebMapper.toResponseDto(tagService.getTagBySlug(slug)));
+                .body(tagWebMapper.toResponseDto(tagService.getTagById(tagId)));
     }
 
     @PostMapping
-    public ResponseEntity<TagResponseDto> createTag(@RequestBody TagRequestDto tagRequestDto) {
+    public ResponseEntity<TagResponseDto> createTag(@Valid @RequestBody TagRequestDto tagRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(tagWebMapper.toResponseDto(tagService.createTag(tagRequestDto)));
     }
 
-    @DeleteMapping("/{slug}")
-    public ResponseEntity<Void> deleteTagBySlug(@PathVariable String slug) {
-        tagService.deleteTagBySlug(slug);
+    @DeleteMapping("/{tagId}")
+    public ResponseEntity<Void> deleteTagById(@PathVariable Long tagId) {
+        tagService.deleteTagById(tagId);
         return ResponseEntity.noContent().build();
     }
 }

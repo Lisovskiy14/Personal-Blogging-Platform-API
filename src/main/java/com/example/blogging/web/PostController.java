@@ -7,6 +7,8 @@ import com.example.blogging.dto.post.PostRequestDto;
 import com.example.blogging.dto.post.PostResponseDto;
 import com.example.blogging.service.PostService;
 import com.example.blogging.web.mapper.PostWebMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -48,7 +50,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(@RequestBody PostRequestDto postRequestDto) {
+    public ResponseEntity<PostResponseDto> createPost(@Valid @RequestBody PostRequestDto postRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(postWebMapper.toResponseDto(postService.createPost(postRequestDto)));
@@ -56,7 +58,7 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity<PostResponseDto> editPostById(
-            @RequestBody EditPostRequestDto editPostRequestDto,
+            @Valid @RequestBody EditPostRequestDto editPostRequestDto,
             @PathVariable UUID postId
     ) {
         return ResponseEntity.ok()

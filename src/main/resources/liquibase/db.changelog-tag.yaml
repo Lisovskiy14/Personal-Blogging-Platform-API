@@ -15,7 +15,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: BIGINT
-                  defaultValueSequenceNextVal: tags_seq
+                  defaultValueComputed: "nextval('tags_seq')"
                   constraints:
                     primaryKey: true
               - column:
