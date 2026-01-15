@@ -26,17 +26,14 @@ public class PostController {
     private final PostWebMapper postWebMapper;
 
     @GetMapping
-    public ResponseEntity<PostListResponseDto> getAllPosts(@RequestParam(required = false) UUID authorId) {
-        List<Post> posts;
-        if (authorId != null) {
-            posts = postService.getAllPostsByAuthorId(authorId);
-        } else {
-            posts = postService.getAllPosts();
-        }
+    public ResponseEntity<PostListResponseDto> getAllPosts(
+            @RequestParam(required = false) UUID authorId,
+            @RequestParam(required = false) String title
+    ) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new PostListResponseDto(
-                        posts.stream()
+                        postService.getAllPosts(authorId, title).stream()
                                 .map(postWebMapper::toResponseDto)
                                 .toList()
                 ));

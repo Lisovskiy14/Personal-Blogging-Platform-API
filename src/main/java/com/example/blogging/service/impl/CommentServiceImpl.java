@@ -7,11 +7,13 @@ import com.example.blogging.repository.PostRepository;
 import com.example.blogging.repository.UserRepository;
 import com.example.blogging.repository.entity.CommentEntity;
 import com.example.blogging.service.CommentService;
-import com.example.blogging.service.exception.CommentNotFoundException;
-import com.example.blogging.service.exception.PostNotFoundException;
-import com.example.blogging.service.exception.UserNotFoundException;
+import com.example.blogging.service.exception.notFound.CommentNotFoundException;
+import com.example.blogging.service.exception.notFound.PostNotFoundException;
+import com.example.blogging.service.exception.notFound.UserNotFoundException;
 import com.example.blogging.service.mapper.CommentEntityMapper;
+import com.example.blogging.service.specification.CommentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +30,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getAllCommentsByPostId(UUID postId) {
-        return commentRepository.findAllByPostId(postId)
-                .orElseThrow(() -> new PostNotFoundException(postId.toString()))
-                .stream()
-                .map(commentEntityMapper::toComment)
-                .toList();
-    }
+    public List<Comment> getAllComments(UUID postId, UUID authorId) {
+        Specification<CommentEntity> specification = Specification.allOf(
+                CommentSpecification.byAuthorId(authorId),
+                CommentSpecification.byPostId(postId)
+        );
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Comment> getAllCommentsByAuthorId(UUID authorId) {
-        return commentRepository.findAllByAuthorId(authorId)
-                .orElseThrow(() -> new UserNotFoundException(authorId.toString()))
-                .stream()
+        List<CommentEntity> commentEntities = commentRepository.findAll(specification);
+        return commentEntities.stream()
                 .map(commentEntityMapper::toComment)
                 .toList();
     }

@@ -1,6 +1,5 @@
 package com.example.blogging.service.impl;
 
-import com.example.blogging.common.PostTagId;
 import com.example.blogging.domain.Post;
 import com.example.blogging.dto.post.EditPostRequestDto;
 import com.example.blogging.dto.post.PostRequestDto;
@@ -11,11 +10,13 @@ import com.example.blogging.repository.entity.PostEntity;
 import com.example.blogging.repository.entity.PostTagEntity;
 import com.example.blogging.repository.entity.TagEntity;
 import com.example.blogging.service.PostService;
-import com.example.blogging.service.exception.PostNotFoundException;
-import com.example.blogging.service.exception.UserNotFoundException;
+import com.example.blogging.service.exception.notFound.PostNotFoundException;
+import com.example.blogging.service.exception.notFound.UserNotFoundException;
 import com.example.blogging.service.mapper.PostEntityMapper;
+import com.example.blogging.service.specification.PostSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +35,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Post> getAllPosts() {
-        return postRepository.findAll().stream()
-                .map(postEntityMapper::toPost)
-                .toList();
-    }
+    public List<Post> getAllPosts(UUID authorId, String title) {
+        Specification<PostEntity> specification = Specification.allOf(
+                PostSpecification.byAuthorId(authorId),
+                PostSpecification.byTitle(title)
+        );
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Post> getAllPostsByAuthorId(UUID authorId) {
-        return postRepository.findAllByAuthorId(authorId).stream()
+        List<PostEntity> postEntities = postRepository.findAll(specification);
+
+        return postEntities.stream()
                 .map(postEntityMapper::toPost)
                 .toList();
     }
@@ -70,9 +70,8 @@ public class PostServiceImpl implements PostService {
 
         Set<PostTagEntity> postTagEntitySet = new HashSet<>();
         for (TagEntity tagEntity : tagEntitySet) {
-            PostTagId postTagId = new PostTagId(postEntity.getId(), tagEntity.getId());
             PostTagEntity postTagEntity = PostTagEntity.builder()
-                    .id(postTagId)
+                    .post(postEntity)
                     .tag(tagEntity)
                     .build();
             postTagEntitySet.add(postTagEntity);
@@ -104,20 +103,24 @@ public class PostServiceImpl implements PostService {
         if (editPostRequestDto.getImageUrl() != null) {
             postEntity.setImageUrl(editPostRequestDto.getImageUrl());
         }
+
         Set<Long> tagIds = editPostRequestDto.getTagIds();
         if (tagIds != null && !tagIds.isEmpty()) {
-            Set<TagEntity> tagEntitySet = tagRepository.findAllByIdIn(tagIds);
             if (editPostRequestDto.isToAddTags()) {
+                Set<TagEntity> tagEntitySet = tagRepository.findAllByIdIn(tagIds);
                 for (TagEntity tagEntity : tagEntitySet) {
-                    postEntity.getTags().add(PostTagEntity.builder()
-                            .id(new PostTagId(postId, tagEntity.getId()))
-                            .build());
+                    boolean alreadyExists = postEntity.getTags().stream()
+                            .anyMatch(pt -> pt.getTag().getId().equals(tagEntity.getId()));
+                    if (!alreadyExists) {
+                        postEntity.getTags().add(PostTagEntity.builder()
+                                .post(postEntity)
+                                .tag(tagEntity)
+                                .build());
+                    }
                 }
             } else {
-                postEntity.getTags().stream()
-                        .filter(postTagEntity -> tagEntitySet
-                                .contains(postTagEntity.getTag()))
-                        .forEach(postEntity.getTags()::remove);
+                postEntity.getTags().removeIf(pt ->
+                        tagIds.contains(pt.getTag().getId()));
             }
         }
 

@@ -1,4 +1,4 @@
-package com.example.blogging.service.exception;
+package com.example.blogging.service.exception.notFound;
 
 public class UserNotFoundException extends ResourceNotFoundException {
     private static final String USER_WITH_ID_NOT_FOUND = "User with id %s not found";

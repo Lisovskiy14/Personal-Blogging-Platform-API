@@ -1,17 +1,15 @@
 package com.example.blogging.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "posts")
 @Builder
@@ -36,7 +34,11 @@ public class PostEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "post",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true
+    )
     private Set<PostTagEntity> tags;
 
     @Column(name = "created_at", nullable = false, updatable = false)

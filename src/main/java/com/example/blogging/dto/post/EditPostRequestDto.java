@@ -12,7 +12,7 @@ public class EditPostRequestDto {
     @Size(min = 3, max = 50, message = "must be between 3 and 50 characters")
     String title;
 
-    @Size(min = 3, max = 50, message = "must be between 3 and 50 characters")
+    @Size(min = 3, max = 1000, message = "must be between 3 and 50 characters")
     String content;
 
     @URL(protocol = "https", message = "must be a valid URL")

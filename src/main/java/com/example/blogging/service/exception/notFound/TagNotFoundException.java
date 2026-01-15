@@ -1,4 +1,4 @@
-package com.example.blogging.service.exception;
+package com.example.blogging.service.exception.notFound;
 
 public class TagNotFoundException extends ResourceNotFoundException {
     private static final String TAG_WITH_SLUG_NOT_FOUND = "Tag with id %s not found";

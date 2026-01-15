@@ -28,11 +28,10 @@ public class CommentController {
             @RequestParam(required = false) UUID postId,
             @RequestParam(required = false) UUID authorId
     ) {
-        List<Comment> comments;
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CommentListResponseDto(
-                        commentService.getAllCommentsByPostId(postId).stream()
+                        commentService.getAllComments(postId, authorId).stream()
                                 .map(commentWebMapper::toResponseDto)
                                 .toList()
                 ));

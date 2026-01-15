@@ -1,10 +1,10 @@
 package com.example.blogging.repository.entity;
 
-import com.example.blogging.common.PostTagId;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "posts_tags")
 @Builder
@@ -12,17 +12,20 @@ import lombok.*;
 @AllArgsConstructor
 public class PostTagEntity {
 
-    @EmbeddedId
-    private PostTagId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_tags_seq_gen")
+    @SequenceGenerator(
+            name = "posts_tags_seq_gen",
+            sequenceName = "posts_tags_seq"
+    )
+    private Long id;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("postId")
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private PostEntity post;
 
     @ManyToOne
-    @MapsId("tagId")
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tag_id", nullable = false)
     private TagEntity tag;
 }

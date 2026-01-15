@@ -1,12 +1,10 @@
 package com.example.blogging.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "tags")
 @Builder
@@ -18,8 +16,7 @@ public class TagEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tags_seq_gen")
     @SequenceGenerator(
             name = "tags_seq_gen",
-            sequenceName = "tags_seq",
-            allocationSize = 1
+            sequenceName = "tags_seq"
     )
     private Long id;
 

@@ -10,7 +10,5 @@ public class UserRequestDto {
     @Size(min = 3, max = 20, message = "must be between 3 and 20 characters")
     String username;
 
-    @NotBlank(message = "is required")
-    @Size(min = 6, message = "must be at least 6 characters")
     String password;
 }

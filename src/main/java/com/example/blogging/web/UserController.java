@@ -1,16 +1,16 @@
 package com.example.blogging.web;
 
+import com.example.blogging.dto.user.UserRequestDto;
 import com.example.blogging.dto.user.UserResponseDto;
 import com.example.blogging.dto.user.UserListResponseDto;
 import com.example.blogging.service.UserService;
 import com.example.blogging.web.mapper.UserWebMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Stack;
 import java.util.UUID;
@@ -39,5 +39,12 @@ public class UserController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(userWebMapper.toResponseDto(userService.getUserById(userId)));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(userWebMapper.toResponseDto(userService.createUser(userRequestDto)));
     }
 }
