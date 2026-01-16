@@ -15,6 +15,6 @@ public class Post {
     private String content;
     private String imageUrl;
     private Set<Tag> tags;
-//    private List<Comment> comments;
+    private List<Comment> comments;
     private LocalDateTime createdAt;
 }

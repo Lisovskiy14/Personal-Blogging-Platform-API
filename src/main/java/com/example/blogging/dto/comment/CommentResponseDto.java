@@ -3,6 +3,7 @@ package com.example.blogging.dto.comment;
 import com.example.blogging.dto.user.UserResponseDto;
 import lombok.Value;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Value
@@ -11,4 +12,5 @@ public class CommentResponseDto {
     UserResponseDto author;
     UUID postId;
     String content;
+    LocalDateTime createdAt;
 }

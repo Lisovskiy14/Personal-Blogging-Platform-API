@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,6 +41,9 @@ public class PostEntity {
             orphanRemoval = true
     )
     private Set<PostTagEntity> tags;
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<CommentEntity> comments;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

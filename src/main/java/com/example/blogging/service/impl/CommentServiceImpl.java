@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
                 .content(commentRequestDto.getContent())
                 .build();
 
-        commentEntity = commentRepository.save(commentEntity);
+        commentEntity = commentRepository.saveAndFlush(commentEntity);
         return commentEntityMapper.toComment(commentEntity);
     }
 

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public interface TagWebMapper {
 
     default TagSetResponseDto toTagSetResponseDto(Set<Tag> tags) {
-        if (tags == null) {
+        if (tags == null || tags.isEmpty()) {
             return null;
         }
         Set<TagResponseDto> tagResponseDtos = tags.stream()

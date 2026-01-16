@@ -35,10 +35,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Post> getAllPosts(UUID authorId, String title) {
+    public List<Post> getAllPosts(UUID authorId, String title, Set<Long> tagIds) {
         Specification<PostEntity> specification = Specification.allOf(
                 PostSpecification.byAuthorId(authorId),
-                PostSpecification.byTitle(title)
+                PostSpecification.byTitle(title),
+                PostSpecification.byTagIds(tagIds)
         );
 
         List<PostEntity> postEntities = postRepository.findAll(specification);
@@ -80,7 +81,7 @@ public class PostServiceImpl implements PostService {
         postEntity.setTags(postTagEntitySet);
 
         try {
-            postEntity = postRepository.save(postEntity);
+            postEntity = postRepository.saveAndFlush(postEntity);
         } catch (DataIntegrityViolationException e) {
             throw new UserNotFoundException(postRequestDto.getAuthorId().toString());
         }

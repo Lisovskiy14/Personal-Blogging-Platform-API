@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -28,12 +29,13 @@ public class PostController {
     @GetMapping
     public ResponseEntity<PostListResponseDto> getAllPosts(
             @RequestParam(required = false) UUID authorId,
-            @RequestParam(required = false) String title
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Set<Long> tagIds
     ) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new PostListResponseDto(
-                        postService.getAllPosts(authorId, title).stream()
+                        postService.getAllPosts(authorId, title, tagIds).stream()
                                 .map(postWebMapper::toResponseDto)
                                 .toList()
                 ));

@@ -11,19 +11,7 @@ import org.mapstruct.Named;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = TagEntityMapper.class)
+@Mapper(componentModel = "spring", uses = {TagEntityMapper.class, CommentEntityMapper.class})
 public interface PostEntityMapper {
     Post toPost(PostEntity postEntity);
-
-//    @Named("postTagEntitiesToTags")
-//    default Set<Tag> postTagEntitiesToTags(Set<PostTagEntity> postTagEntities) {
-//            return postTagEntities.stream()
-//                    .map(PostTagEntity::getTag)
-//                    .map(tagEntity -> Tag.builder()
-//                            .id(tagEntity.getId())
-//                            .name(tagEntity.getName())
-//                            .slug(tagEntity.getSlug())
-//                            .build())
-//                    .collect(Collectors.toSet());
-//    }
 }

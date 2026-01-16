@@ -5,10 +5,11 @@ import com.example.blogging.dto.post.EditPostRequestDto;
 import com.example.blogging.dto.post.PostRequestDto;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PostService {
-    List<Post> getAllPosts(UUID authorId, String title);
+    List<Post> getAllPosts(UUID authorId, String title, Set<Long> tagIds);
     Post getPostById(UUID id);
     Post createPost(PostRequestDto postRequestDto);
     Post editPost(EditPostRequestDto editPostRequestDto, UUID postId);
