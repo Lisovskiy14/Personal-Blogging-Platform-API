@@ -13,8 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +27,9 @@ public class CommentController {
             @RequestParam(required = false) UUID postId,
             @RequestParam(required = false) UUID authorId
     ) {
+        Stack<Integer> stack = new Stack<>();
+        stack.add(1);
+        int val = stack.pop();
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CommentListResponseDto(
