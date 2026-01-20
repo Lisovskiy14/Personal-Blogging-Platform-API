@@ -1,16 +1,12 @@
 package com.example.blogging.repository.entity;
 
-import com.example.blogging.common.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -31,7 +27,13 @@ public class UserEntity implements UserDetails, CredentialsContainer {
     @Column(name = "password", nullable = false)
     private String password;
 
-    private Set<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleEntity> roles = new HashSet<>();
 
     @Override
     public void eraseCredentials() {
@@ -40,7 +42,7 @@ public class UserEntity implements UserDetails, CredentialsContainer {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles;
     }
 
     @Override

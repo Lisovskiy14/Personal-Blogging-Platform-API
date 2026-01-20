@@ -1,6 +1,6 @@
-package com.example.blogging.service.exception.notFound;
+package com.example.blogging.service.exception.notFound.impl;
 
-import java.util.UUID;
+import com.example.blogging.service.exception.notFound.ResourceNotFoundException;
 
 public class UserNotFoundException extends ResourceNotFoundException {
     private static final String USER_WITH_ID_NOT_FOUND = "User with id %s not found";

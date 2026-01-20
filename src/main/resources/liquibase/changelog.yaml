@@ -7,3 +7,5 @@ databaseChangeLog:
       file: liquibase/db.changelog-post.yaml
   - include:
       file: liquibase/db.changelog-comment.yaml
+  - include:
+      file: liquibase/db.changelog-role.yaml

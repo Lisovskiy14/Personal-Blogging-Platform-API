@@ -5,7 +5,7 @@ import com.example.blogging.dto.tag.TagRequestDto;
 import com.example.blogging.repository.TagRepository;
 import com.example.blogging.repository.entity.TagEntity;
 import com.example.blogging.service.TagService;
-import com.example.blogging.service.exception.notFound.TagNotFoundException;
+import com.example.blogging.service.exception.notFound.impl.TagNotFoundException;
 import com.example.blogging.service.mapper.TagEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
