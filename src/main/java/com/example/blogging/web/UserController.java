@@ -1,18 +1,16 @@
 package com.example.blogging.web;
 
-import com.example.blogging.dto.user.UserRequestDto;
+import com.example.blogging.dto.user.UpdateUserRolesRequestDto;
 import com.example.blogging.dto.user.UserResponseDto;
 import com.example.blogging.dto.user.UserListResponseDto;
 import com.example.blogging.service.UserService;
 import com.example.blogging.web.mapper.UserWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Stack;
 import java.util.UUID;
 
 @RestController
@@ -41,10 +39,14 @@ public class UserController {
                 .body(userWebMapper.toResponseDto(userService.getUserById(userId)));
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
+    @PatchMapping("/{userId}")
+    public ResponseEntity<UserResponseDto> updateUserRoles(
+            @PathVariable UUID userId,
+            @Valid @RequestBody UpdateUserRolesRequestDto updateUserRolesRequestDto
+    ) {
+        return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(userWebMapper.toResponseDto(userService.createUser(userRequestDto)));
+                .body(userWebMapper.toResponseDto(
+                        userService.updateUserRoles(userId, updateUserRolesRequestDto)));
     }
 }

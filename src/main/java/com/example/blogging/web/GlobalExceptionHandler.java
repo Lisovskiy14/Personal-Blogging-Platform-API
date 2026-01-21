@@ -4,6 +4,7 @@ import com.example.blogging.service.exception.conflict.ResourceAlreadyExistsExce
 import com.example.blogging.service.exception.notFound.ResourceNotFoundException;
 import com.example.blogging.web.exception.ParamsValidationDetails;
 import com.example.blogging.web.exception.ProblemDetailBuilder;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -45,7 +46,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }
 
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     .build();
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                     .body(problemDetail);
     }
 
@@ -77,7 +78,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }
 
@@ -93,7 +94,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ProblemDetail> handleJwtException(JwtException ex) {
+        log.info("JWT Exception has occurred: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetailBuilder.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .type(URI.create("urn:problem-type:jwt-exception"))
+                .title("JWT Exception")
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }
 
@@ -109,7 +126,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }
 }

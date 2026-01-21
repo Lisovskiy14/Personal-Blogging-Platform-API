@@ -3,8 +3,7 @@ package com.example.blogging.dto.role;
 import lombok.Value;
 
 @Value
-public class RoleResponseDto {
+public class ShortRoleResponseDto {
     Long id;
     String name;
-    ShortRoleResponseDto parent;
 }

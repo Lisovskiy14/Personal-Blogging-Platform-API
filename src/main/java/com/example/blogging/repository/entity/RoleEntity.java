@@ -24,6 +24,10 @@ public class RoleEntity implements GrantedAuthority {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private RoleEntity parent;
+
     @Override
     public String getAuthority() {
         return name;

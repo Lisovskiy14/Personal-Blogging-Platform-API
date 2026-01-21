@@ -9,4 +9,6 @@ public class RoleRequestDto {
     @NotBlank(message = "is required")
     @Size(min = 3, max = 20, message = "must be between 3 and 20 characters")
     String name;
+
+    Long parentId;
 }

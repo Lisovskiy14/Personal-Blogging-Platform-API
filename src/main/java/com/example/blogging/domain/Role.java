@@ -9,6 +9,7 @@ public class Role {
     public static final String ROLE_PREFIX = "ROLE_";
     private Long id;
     private String name;
+    private Role parent;
 
     public Role name(String name) {
         this.name = ROLE_PREFIX + name.toUpperCase();

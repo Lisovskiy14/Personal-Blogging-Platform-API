@@ -83,7 +83,7 @@ public class PostServiceImpl implements PostService {
         try {
             postEntity = postRepository.saveAndFlush(postEntity);
         } catch (DataIntegrityViolationException e) {
-            throw new UserNotFoundException(postRequestDto.getAuthorId().toString());
+            throw new UserNotFoundException(postRequestDto.getAuthorId());
         }
 
         return postEntityMapper.toPost(postEntity);

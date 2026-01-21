@@ -54,7 +54,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public Comment createComment(CommentRequestDto commentRequestDto) {
         if (!userRepository.existsById(commentRequestDto.getAuthorId())) {
-            throw new UserNotFoundException(commentRequestDto.getAuthorId().toString());
+            throw new UserNotFoundException(commentRequestDto.getAuthorId());
         }
         if (!postRepository.existsById(commentRequestDto.getPostId())) {
             throw new PostNotFoundException(commentRequestDto.getPostId().toString());

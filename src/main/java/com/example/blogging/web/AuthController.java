@@ -3,6 +3,7 @@ package com.example.blogging.web;
 import com.example.blogging.dto.auth.JwtAuthResponseDto;
 import com.example.blogging.dto.auth.SignInRequestDto;
 import com.example.blogging.dto.auth.SignUpRequestDto;
+import com.example.blogging.dto.auth.SignUpResponseDto;
 import com.example.blogging.security.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,9 @@ public class AuthController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<JwtAuthResponseDto> signIn(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+    public ResponseEntity<SignUpResponseDto> signUp(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new JwtAuthResponseDto(authService.signUp(signUpRequestDto)));
+                .body(authService.signUp(signUpRequestDto));
     }
 }
