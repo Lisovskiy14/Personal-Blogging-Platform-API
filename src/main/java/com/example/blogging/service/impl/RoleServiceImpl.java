@@ -9,20 +9,24 @@ import com.example.blogging.security.service.RoleHierarchyService;
 import com.example.blogging.service.RoleService;
 import com.example.blogging.service.exception.conflict.impl.RoleAlreadyExistsException;
 import com.example.blogging.service.exception.notFound.impl.RoleNotFoundException;
+import com.example.blogging.service.exception.roleHierarchy.IllegalRoleHierarchyException;
+import com.example.blogging.service.exception.roleHierarchy.impl.RootRoleConflictException;
 import com.example.blogging.service.mapper.RoleEntityMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
@@ -62,27 +66,61 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Role createRole(RoleRequestDto roleRequestDto) {
-        if (!roleRepository.existsById(roleRequestDto.getParentId())) {
-            throw new RoleNotFoundException(roleRequestDto.getParentId());
+        String formatterRoleName = Role.ROLE_PREFIX + roleRequestDto.getName().toUpperCase();
+
+        if (roleRepository.existsByName(formatterRoleName)) {
+            throw new RoleAlreadyExistsException(formatterRoleName);
         }
 
-        RoleEntity parentRoleEntity = roleRepository.getReferenceById(roleRequestDto.getParentId());
+        RoleEntity parent = (roleRequestDto.getParentId() != null)
+                ? roleRepository.findById(roleRequestDto.getParentId())
+                        .orElseThrow(() -> new RoleNotFoundException(roleRequestDto.getParentId()))
+                : null;
 
-        Role role = Role.builder()
-                .name(Role.ROLE_PREFIX + roleRequestDto.getName().toUpperCase())
-                .parent(roleEntityMapper.toRole(parentRoleEntity))
+        RoleEntity child = (roleRequestDto.getChildId() != null)
+                ? roleRepository.findById(roleRequestDto.getChildId())
+                        .orElseThrow(() -> new RoleNotFoundException(roleRequestDto.getChildId()))
+                : null;
+
+        if (parent == null) {
+            RoleEntity existingRoot = roleRepository.findByParent(null);
+            if (existingRoot != null && (child == null || !existingRoot.getId().equals(child.getId()))) {
+                throw new RootRoleConflictException(existingRoot.getId());
+            }
+        }
+
+        if (parent != null && child != null) {
+            if (child.getParent() == null || !child.getParent().getId().equals(parent.getId())) {
+                throw new IllegalRoleHierarchyException("Provided parent is not the actual parent of the provided child");
+            }
+            if (child.getId().equals(parent.getId())) {
+                throw new IllegalRoleHierarchyException("Provided parent and child are the same");
+            }
+        }
+
+        RoleEntity newRole = RoleEntity.builder()
+                .name(formatterRoleName)
+                .parent(parent)
+                .children(new HashSet<>())
                 .build();
 
-        if (roleRepository.existsByName(role.getName())) {
-            throw new RoleAlreadyExistsException(role.getName());
+        if (child != null) {
+            if (parent != null) {
+                parent.getChildren().remove(child);
+                parent.getChildren().add(newRole);
+            }
+            newRole.getChildren().add(child);
+            child.setParent(newRole);
+        } else if (parent != null) {
+            parent.getChildren().add(newRole);
         }
 
-        RoleEntity roleEntity = roleEntityMapper.toRoleEntity(role);
-        roleEntity = roleRepository.saveAndFlush(roleEntity);
+        newRole = roleRepository.saveAndFlush(newRole);
 
         registerHierarchyRefreshSynchronization();
 
-        return roleEntityMapper.toRole(roleEntity);
+        log.info("New Role was created: {}.", newRole.getId());
+        return roleEntityMapper.toRole(newRole);
     }
 
     @Override
@@ -96,17 +134,29 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
 
-        List<RoleEntity> childrenRoles = roleRepository.findAllByParent(roleToDelete);
+        RoleEntity parent = roleToDelete.getParent();
 
-        if (!childrenRoles.isEmpty()) {
-            RoleEntity parentRole = roleToDelete.getParent();
-            for (RoleEntity childRoleEntity : childrenRoles) {
-                childRoleEntity.setParent(parentRole);
+        if (roleToDelete.getChildren() != null && !roleToDelete.getChildren().isEmpty()) {
+            if (parent == null && roleToDelete.getChildren().size() > 1) {
+                throw new IllegalRoleHierarchyException("Cannot delete root role with 2 or more child roles.");
             }
+            roleToDelete.getChildren().forEach(child -> {
+                child.setParent(parent);
+                if (parent != null) {
+                    parent.getChildren().add(child);
+                }
+            });
         }
 
-        roleRepository.deleteById(roleId);
+        if (parent != null) {
+            parent.getChildren().remove(roleToDelete);
+        }
+
+        roleRepository.delete(roleToDelete);
+        roleRepository.flush();
+
         registerHierarchyRefreshSynchronization();
+        log.info("Role with id {} was deleted.", roleId);
     }
 
     private void registerHierarchyRefreshSynchronization() {

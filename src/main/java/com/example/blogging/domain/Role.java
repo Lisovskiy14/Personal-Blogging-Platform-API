@@ -3,6 +3,8 @@ package com.example.blogging.domain;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @Builder
 public class Role {
@@ -10,6 +12,7 @@ public class Role {
     private Long id;
     private String name;
     private Role parent;
+    private Set<Role> children;
 
     public Role name(String name) {
         this.name = ROLE_PREFIX + name.toUpperCase();

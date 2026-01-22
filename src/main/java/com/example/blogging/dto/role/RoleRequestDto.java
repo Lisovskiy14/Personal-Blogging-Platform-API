@@ -11,4 +11,6 @@ public class RoleRequestDto {
     String name;
 
     Long parentId;
+
+    Long childId;
 }

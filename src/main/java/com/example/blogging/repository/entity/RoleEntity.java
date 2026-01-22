@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -27,6 +32,9 @@ public class RoleEntity implements GrantedAuthority {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private RoleEntity parent;
+
+    @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<RoleEntity> children = new HashSet<>();
 
     @Override
     public String getAuthority() {

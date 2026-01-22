@@ -8,11 +8,13 @@ import com.example.blogging.service.TagService;
 import com.example.blogging.service.exception.notFound.impl.TagNotFoundException;
 import com.example.blogging.service.mapper.TagEntityMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
@@ -44,6 +46,7 @@ public class TagServiceImpl implements TagService {
                 .build();
 
         tagEntity = tagRepository.save(tagEntity);
+        log.info("New Tag was created: {}.", tagEntity.getId());
         return tagEntityMapper.toTag(tagEntity);
     }
 
@@ -51,5 +54,6 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public void deleteTagById(Long tagId) {
         tagRepository.deleteById(tagId);
+        log.info("Tag with id {} was deleted.", tagId);
     }
 }

@@ -13,6 +13,7 @@ import com.example.blogging.service.exception.notFound.impl.UserNotFoundExceptio
 import com.example.blogging.service.mapper.CommentEntityMapper;
 import com.example.blogging.service.specification.CommentSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -67,6 +69,7 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         commentEntity = commentRepository.saveAndFlush(commentEntity);
+        log.info("New Comment was created: {}.", commentEntity.getId());
         return commentEntityMapper.toComment(commentEntity);
     }
 
@@ -74,5 +77,6 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteCommentById(UUID id) {
         commentRepository.deleteById(id);
+        log.info("Comment with id {} was deleted.", id);
     }
 }

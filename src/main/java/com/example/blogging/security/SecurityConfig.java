@@ -69,7 +69,6 @@ public class SecurityConfig {
 
     @Bean
     public DynamicRoleHierarchy dynamicRoleHierarchy(RoleHierarchyService roleHierarchyService) {
-        System.out.println(roleHierarchyService.getHierarchy());
         return new DynamicRoleHierarchy(roleHierarchyService.getHierarchy());
     }
 

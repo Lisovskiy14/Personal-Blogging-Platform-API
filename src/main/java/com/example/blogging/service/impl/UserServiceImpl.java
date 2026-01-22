@@ -7,12 +7,11 @@ import com.example.blogging.repository.UserRepository;
 import com.example.blogging.repository.entity.RoleEntity;
 import com.example.blogging.repository.entity.UserEntity;
 import com.example.blogging.service.UserService;
-import com.example.blogging.service.exception.conflict.impl.UserAlreadyExistsException;
 import com.example.blogging.service.exception.notFound.impl.RoleNotFoundException;
 import com.example.blogging.service.exception.notFound.impl.UserNotFoundException;
 import com.example.blogging.service.mapper.UserEntityMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -73,6 +73,9 @@ public class UserServiceImpl implements UserService {
         userEntity.getRoles().addAll(roleEntitySet);
 
         userEntity = userRepository.saveAndFlush(userEntity);
+        log.info("User with id {} was updated with new roles: {}.", userId, roleEntitySet.stream()
+                .map(RoleEntity::getName)
+                .toList());
         return userEntityMapper.toUser(userEntity);
     }
 }

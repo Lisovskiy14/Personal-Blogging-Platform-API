@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface RoleEntityMapper {
     @Mapping(target = "parent.parent", ignore = true)
+    @Mapping(target = "parent.children", ignore = true)
     Role toRole(RoleEntity roleEntity);
     RoleEntity toRoleEntity(Role role);
 }

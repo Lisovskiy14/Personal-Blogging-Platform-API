@@ -15,6 +15,7 @@ import com.example.blogging.service.exception.notFound.impl.UserNotFoundExceptio
 import com.example.blogging.service.mapper.PostEntityMapper;
 import com.example.blogging.service.specification.PostSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -86,6 +88,8 @@ public class PostServiceImpl implements PostService {
             throw new UserNotFoundException(postRequestDto.getAuthorId());
         }
 
+        log.info("New Post was created: {}.", postEntity.getId());
+
         return postEntityMapper.toPost(postEntity);
     }
 
@@ -133,5 +137,6 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void deletePostById(UUID id) {
         postRepository.deleteById(id);
+        log.info("Post with id {} was deleted.", id);
     }
 }

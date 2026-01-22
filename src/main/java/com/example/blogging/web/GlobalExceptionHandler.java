@@ -2,11 +2,13 @@ package com.example.blogging.web;
 
 import com.example.blogging.service.exception.conflict.ResourceAlreadyExistsException;
 import com.example.blogging.service.exception.notFound.ResourceNotFoundException;
+import com.example.blogging.service.exception.roleHierarchy.IllegalRoleHierarchyException;
 import com.example.blogging.web.exception.ParamsValidationDetails;
 import com.example.blogging.web.exception.ProblemDetailBuilder;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -110,6 +112,38 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex) {
+        log.info("Access Denied Exception has occurred: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetailBuilder.builder()
+                .status(HttpStatus.FORBIDDEN)
+                .type(URI.create("urn:problem-type:access-denied"))
+                .title("Access Denied")
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler(IllegalRoleHierarchyException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalRoleHierarchy(IllegalRoleHierarchyException ex) {
+        log.info("Illegal Role Hierarchy Exception has occurred: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetailBuilder.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .type(URI.create("urn:problem-type:illegal-role-hierarchy"))
+                .title("Illegal Role Hierarchy")
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }

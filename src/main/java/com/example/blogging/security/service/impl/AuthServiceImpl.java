@@ -1,6 +1,5 @@
 package com.example.blogging.security.service.impl;
 
-import com.example.blogging.domain.User;
 import com.example.blogging.dto.auth.JwtAuthResponseDto;
 import com.example.blogging.dto.auth.SignInRequestDto;
 import com.example.blogging.dto.auth.SignUpRequestDto;
@@ -16,6 +15,7 @@ import com.example.blogging.service.exception.conflict.impl.UserAlreadyExistsExc
 import com.example.blogging.service.mapper.UserEntityMapper;
 import com.example.blogging.web.mapper.UserWebMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -73,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
         JwtAuthResponseDto jwtAuthResponseDto = new JwtAuthResponseDto(
                 jwtService.generateToken(userEntity));
 
+        log.info("New User was signed up: {}.", userEntity.getId());
         return new SignUpResponseDto(userResponseDto, jwtAuthResponseDto);
     }
 }
