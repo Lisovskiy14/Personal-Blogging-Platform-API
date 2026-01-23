@@ -3,6 +3,7 @@ package com.example.blogging.web;
 import com.example.blogging.dto.role.RoleRequestDto;
 import com.example.blogging.dto.role.RoleResponseDto;
 import com.example.blogging.dto.role.RoleSetResponseDto;
+import com.example.blogging.dto.role.UpdateRoleRequestDto;
 import com.example.blogging.service.RoleService;
 import com.example.blogging.web.mapper.RoleWebMapper;
 import jakarta.validation.Valid;
@@ -44,6 +45,16 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(roleWebMapper.toResponseDto(roleService.createRole(roleRequestDto)));
+    }
+
+    @PatchMapping("/{roleId}")
+    public ResponseEntity<RoleResponseDto> updateRole(
+            @PathVariable Long roleId,
+            @Valid @RequestBody UpdateRoleRequestDto updateRoleRequestDto
+    ) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(roleWebMapper.toResponseDto(roleService.updateRole(roleId, updateRoleRequestDto)));
     }
 
     @DeleteMapping("/{roleId}")

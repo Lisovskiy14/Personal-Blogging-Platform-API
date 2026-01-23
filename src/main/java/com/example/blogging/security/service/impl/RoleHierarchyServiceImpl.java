@@ -19,6 +19,6 @@ public class RoleHierarchyServiceImpl implements RoleHierarchyService {
         return roleRepository.findAll().stream()
                 .filter(roleEntity -> roleEntity.getParent() != null)
                 .map(roleEntity -> roleEntity.getParent().getName() + " > " + roleEntity.getName())
-                .collect(Collectors.joining(" \n "));
+                .collect(Collectors.joining(" \n"));
     }
 }

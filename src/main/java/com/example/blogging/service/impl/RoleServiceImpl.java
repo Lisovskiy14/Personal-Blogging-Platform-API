@@ -2,6 +2,7 @@ package com.example.blogging.service.impl;
 
 import com.example.blogging.domain.Role;
 import com.example.blogging.dto.role.RoleRequestDto;
+import com.example.blogging.dto.role.UpdateRoleRequestDto;
 import com.example.blogging.repository.RoleRepository;
 import com.example.blogging.repository.entity.RoleEntity;
 import com.example.blogging.security.DynamicRoleHierarchy;
@@ -10,6 +11,7 @@ import com.example.blogging.service.RoleService;
 import com.example.blogging.service.exception.conflict.impl.RoleAlreadyExistsException;
 import com.example.blogging.service.exception.notFound.impl.RoleNotFoundException;
 import com.example.blogging.service.exception.roleHierarchy.IllegalRoleHierarchyException;
+import com.example.blogging.service.exception.roleHierarchy.impl.RecursiveHierarchyException;
 import com.example.blogging.service.exception.roleHierarchy.impl.RootRoleConflictException;
 import com.example.blogging.service.mapper.RoleEntityMapper;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +128,49 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
+    public Role updateRole(Long roleId, UpdateRoleRequestDto updateRoleRequestDto) {
+        RoleEntity role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RoleNotFoundException(roleId));
+        
+        if (updateRoleRequestDto.getName() != null) {
+            String newRoleName = Role.ROLE_PREFIX + updateRoleRequestDto.getName().toUpperCase();
+            if (!newRoleName.equals(role.getName()) && roleRepository.existsByName(newRoleName)) {
+                throw new RoleAlreadyExistsException(newRoleName);
+            }
+            role.setName(newRoleName);
+        }
+
+        if (updateRoleRequestDto.getParentId() != null) {
+            Long parentId = updateRoleRequestDto.getParentId();
+
+            if (parentId.equals(roleId)) {
+                throw new IllegalRoleHierarchyException("Cannot assign role to itself as a parent.");
+            }
+
+            RoleEntity parent = roleRepository.findById(parentId)
+                    .orElseThrow(() -> new RoleNotFoundException(parentId));
+
+            if (hasRecursion(role.getId(), parent)) {
+                throw new RecursiveHierarchyException();
+            }
+
+            if (role.getParent() != null) {
+                role.getParent().getChildren().remove(role);
+            }
+
+            role.setParent(parent);
+            parent.getChildren().add(role);
+        }
+
+        role = roleRepository.saveAndFlush(role);
+
+        registerHierarchyRefreshSynchronization();
+        return roleEntityMapper.toRole(role);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteRoleById(Long roleId) {
         RoleEntity roleToDelete = roleRepository.findById(roleId)
                 .orElse(null);
@@ -166,5 +211,16 @@ public class RoleServiceImpl implements RoleService {
                 dynamicRoleHierarchy.updateHierarchy(roleHierarchyService.getHierarchy());
             }
         });
+    }
+
+    private boolean hasRecursion(Long roleIdToUpdate, RoleEntity potentialParent) {
+        RoleEntity current = potentialParent;
+        while (current != null) {
+            if (current.getId().equals(roleIdToUpdate)) {
+                return true;
+            }
+            current = current.getParent();
+        }
+        return false;
     }
 }

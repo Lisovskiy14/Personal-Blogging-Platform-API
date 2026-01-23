@@ -9,6 +9,7 @@ import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -128,6 +129,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ProblemDetail> handleBadCredentials(BadCredentialsException ex) {
+        log.info("Bad Credentials Exception has occurred: {}", ex.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetailBuilder.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .type(URI.create("urn:problem-type:bad-credentials"))
+                .title("Bad Credentials")
+                .detail(ex.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetail);
     }

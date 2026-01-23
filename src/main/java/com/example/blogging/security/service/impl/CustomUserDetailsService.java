@@ -1,10 +1,10 @@
 package com.example.blogging.security.service.impl;
 
 import com.example.blogging.repository.UserRepository;
-import com.example.blogging.service.exception.notFound.impl.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +17,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() ->
-                new UserNotFoundException(username));
+                new UsernameNotFoundException(String.format("User with username %s not found", username)));
     }
 }
