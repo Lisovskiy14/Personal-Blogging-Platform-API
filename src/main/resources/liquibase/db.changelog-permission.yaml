@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: blogging-6
+      author: lisovskiy14
+      changes:
+
+        - createSequence:
+            sequenceName: permissions_seq
+            startValue: 1
+            incrementBy: 50
+            dataType: BIGINT
+
+        - createTable:
+            tableName: permissions
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueComputed: "nextval('permissions_seq')"
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    updatable: false
+
+        - addUniqueConstraint:
+            tableName: permissions
+            columnNames: name
+            constraintName: uq_permissions_name
+
+        - createTable:
+            tableName: roles_permissions
+            columns:
+              - column:
+                  name: role_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: permission_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+
+        - addForeignKeyConstraint:
+            baseTableName: roles_permissions
+            baseColumnNames: role_id
+            referencedTableName: roles
+            referencedColumnNames: id
+            constraintName: fk_roles_permissions_role_id
+
+        - addForeignKeyConstraint:
+            baseTableName: roles_permissions
+            baseColumnNames: permission_id
+            referencedTableName: permissions
+            referencedColumnNames: id
+            constraintName: fk_roles_permissions_permission_id

@@ -1,5 +1,8 @@
 package com.example.blogging.security;
 
+import com.example.blogging.common.Permission;
+import com.example.blogging.repository.PermissionRepository;
+import com.example.blogging.repository.entity.PermissionEntity;
 import com.example.blogging.security.service.RoleHierarchyService;
 import com.example.blogging.security.service.impl.CustomUserDetailsService;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -18,6 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -68,7 +75,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DynamicRoleHierarchy dynamicRoleHierarchy(RoleHierarchyService roleHierarchyService) {
+    public DynamicRoleHierarchy dynamicRoleHierarchy(
+            RoleHierarchyService roleHierarchyService,
+            PermissionRepository permissionRepository
+    ) {
+        SavedPermissionsValidator permissionsValidator = new SavedPermissionsValidator(permissionRepository);
+        permissionsValidator.validate();
+
         return new DynamicRoleHierarchy(roleHierarchyService.getHierarchy());
     }
 
