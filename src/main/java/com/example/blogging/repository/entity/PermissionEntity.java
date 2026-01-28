@@ -28,4 +28,9 @@ public class PermissionEntity implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s:%s]", id, name);
+    }
 }

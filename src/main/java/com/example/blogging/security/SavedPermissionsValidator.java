@@ -29,7 +29,7 @@ public class SavedPermissionsValidator {
 
         Set<PermissionEntity> permissionEntities = Arrays.stream(permissions)
                 .map(permission -> PermissionEntity.builder()
-                        .name(permission.name())
+                        .name(permission.getValue())
                         .build())
                 .collect(Collectors.toSet());
 

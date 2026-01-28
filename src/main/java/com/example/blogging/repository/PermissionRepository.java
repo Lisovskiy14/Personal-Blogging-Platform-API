@@ -8,5 +8,5 @@ import java.util.Set;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<PermissionEntity, Long> {
-//    Set<PermissionEntity> saveAll(Set<PermissionEntity> permissions);
+    Set<PermissionEntity> findAllByIdIn(Set<Long> permissionIds);
 }

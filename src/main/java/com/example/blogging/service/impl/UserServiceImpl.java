@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('user:read')")
     public List<User> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userEntityMapper::toUser)

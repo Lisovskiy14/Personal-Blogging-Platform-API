@@ -3,12 +3,16 @@ package com.example.blogging.service.impl;
 import com.example.blogging.domain.Role;
 import com.example.blogging.dto.role.RoleRequestDto;
 import com.example.blogging.dto.role.UpdateRoleRequestDto;
+import com.example.blogging.repository.PermissionRepository;
 import com.example.blogging.repository.RoleRepository;
+import com.example.blogging.repository.entity.PermissionEntity;
 import com.example.blogging.repository.entity.RoleEntity;
 import com.example.blogging.security.DynamicRoleHierarchy;
 import com.example.blogging.security.service.RoleHierarchyService;
+import com.example.blogging.service.PermissionService;
 import com.example.blogging.service.RoleService;
 import com.example.blogging.service.exception.conflict.impl.RoleAlreadyExistsException;
+import com.example.blogging.service.exception.notFound.impl.PermissionNotFoundException;
 import com.example.blogging.service.exception.notFound.impl.RoleNotFoundException;
 import com.example.blogging.service.exception.roleHierarchy.IllegalRoleHierarchyException;
 import com.example.blogging.service.exception.roleHierarchy.impl.RecursiveHierarchyException;
@@ -22,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,9 +34,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
     private final RoleEntityMapper roleEntityMapper;
     private final DynamicRoleHierarchy dynamicRoleHierarchy;
     private final RoleHierarchyService roleHierarchyService;
+    private final PermissionService permissionService;
 
     @Override
     @Transactional(readOnly = true)
@@ -100,8 +103,14 @@ public class RoleServiceImpl implements RoleService {
             }
         }
 
+        // Check if all given permissions exist
+        Set<PermissionEntity> foundPermissions = permissionService
+                .getAllPermissionsByIdSet(roleRequestDto.getPermissionIds());
+
+        // Creating a new role
         RoleEntity newRole = RoleEntity.builder()
                 .name(formatterRoleName)
+                .permissions(foundPermissions)
                 .parent(parent)
                 .children(new HashSet<>())
                 .build();
@@ -160,6 +169,15 @@ public class RoleServiceImpl implements RoleService {
 
             role.setParent(parent);
             parent.getChildren().add(role);
+        }
+
+        Set<Long> permissionIds = updateRoleRequestDto.getPermissionIds();
+        if (permissionIds != null && !permissionIds.isEmpty()) {
+
+            Set<PermissionEntity> foundPermissions = permissionService
+                    .getAllPermissionsByIdSet(permissionIds);
+
+            role.setPermissions(foundPermissions);
         }
 
         role = roleRepository.saveAndFlush(role);
