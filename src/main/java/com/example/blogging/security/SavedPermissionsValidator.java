@@ -21,7 +21,7 @@ public class SavedPermissionsValidator {
     public void validate() {
         Permission[] permissions = Permission.values();
 
-        Long count = permissionRepository.count();
+        long count = permissionRepository.count();
         if (count == permissions.length) {
             log.info("All permissions are already saved.");
             return;
@@ -36,10 +36,12 @@ public class SavedPermissionsValidator {
         if (count == 0) {
             permissionRepository.saveAll(permissionEntities);
         } else {
-            List<PermissionEntity> savedPermissions = permissionRepository.findAll();
+            List<String> savedNames = permissionRepository.findAll().stream()
+                    .map(PermissionEntity::getName)
+                    .toList();
 
             Set<PermissionEntity> permissionsToSave = permissionEntities.stream()
-                    .filter(permissionEntity -> !savedPermissions.contains(permissionEntity))
+                    .filter(permission -> !savedNames.contains(permission.getName()))
                     .collect(Collectors.toSet());
 
             permissionRepository.saveAll(permissionsToSave);

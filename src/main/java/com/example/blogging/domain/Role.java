@@ -11,6 +11,7 @@ public class Role {
     public static final String ROLE_PREFIX = "ROLE_";
     private Long id;
     private String name;
+    private Set<Permission> permissions;
     private Role parent;
     private Set<Role> children;
 

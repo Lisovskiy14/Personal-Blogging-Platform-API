@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('post:read')")
     public List<Post> getAllPosts(UUID authorId, String title, Set<Long> tagIds) {
         Specification<PostEntity> specification = Specification.allOf(
                 PostSpecification.byAuthorId(authorId),
@@ -53,6 +55,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('post:read')")
     public Post getPostById(UUID id) {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id.toString()));
@@ -61,6 +64,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('post:write')")
     public Post createPost(PostRequestDto postRequestDto) {
         PostEntity postEntity = PostEntity.builder()
                 .author(userRepository.getReferenceById(postRequestDto.getAuthorId()))
@@ -95,6 +99,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('post:write')")
     public Post editPost(EditPostRequestDto editPostRequestDto, UUID postId) {
         PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId.toString()));
@@ -135,6 +140,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('post:delete')")
     public void deletePostById(UUID id) {
         postRepository.deleteById(id);
         log.info("Post with id {} was deleted.", id);

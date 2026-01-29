@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('user:read')")
     public User getUserById(UUID userId) {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));

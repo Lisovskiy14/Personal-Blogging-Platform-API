@@ -5,7 +5,7 @@ import com.example.blogging.repository.entity.RoleEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PermissionEntityMapper.class)
 public interface RoleEntityMapper {
     @Mapping(target = "parent.parent", ignore = true)
     @Mapping(target = "parent.children", ignore = true)

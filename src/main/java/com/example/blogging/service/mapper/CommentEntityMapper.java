@@ -8,5 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = TagEntityMapper.class)
 public interface CommentEntityMapper {
     @Mapping(target = "post.comments", ignore = true)
+    @Mapping(target = "author.roles", ignore = true)
     Comment toComment(CommentEntity commentEntity);
 }

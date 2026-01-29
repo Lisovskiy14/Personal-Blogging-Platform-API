@@ -9,6 +9,7 @@ import com.example.blogging.service.exception.notFound.impl.TagNotFoundException
 import com.example.blogging.service.mapper.TagEntityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('tag:read')")
     public List<Tag> getAllTags() {
         return tagRepository.findAll().stream()
                 .map(tagEntityMapper::toTag)
@@ -31,6 +33,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('tag:read')")
     public Tag getTagById(Long tagId) {
         TagEntity tagEntity = tagRepository.findById(tagId)
                 .orElseThrow(() -> new TagNotFoundException(tagId));
@@ -39,6 +42,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('tag:write')")
     public Tag createTag(TagRequestDto tagRequestDto) {
         TagEntity tagEntity = TagEntity.builder()
                 .name(tagRequestDto.getName())
@@ -52,6 +56,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('tag:delete')")
     public void deleteTagById(Long tagId) {
         tagRepository.deleteById(tagId);
         log.info("Tag with id {} was deleted.", tagId);

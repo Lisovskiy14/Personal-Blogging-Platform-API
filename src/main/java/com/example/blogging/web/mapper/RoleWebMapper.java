@@ -6,7 +6,7 @@ import com.example.blogging.dto.role.ShortRoleResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PermissionWebMapper.class)
 public interface RoleWebMapper {
     RoleResponseDto toResponseDto(Role role);
 }

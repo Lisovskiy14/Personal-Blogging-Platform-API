@@ -15,6 +15,7 @@ import com.example.blogging.service.specification.CommentSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('comment:read')")
     public List<Comment> getAllComments(UUID postId, UUID authorId) {
         Specification<CommentEntity> specification = Specification.allOf(
                 CommentSpecification.byAuthorId(authorId),
@@ -46,6 +48,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('comment:read')")
     public Comment getCommentById(UUID id) {
         CommentEntity commentEntity = commentRepository.findById(id)
                 .orElseThrow(() -> new CommentNotFoundException(id.toString()));
@@ -54,6 +57,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('comment:write')")
     public Comment createComment(CommentRequestDto commentRequestDto) {
         if (!userRepository.existsById(commentRequestDto.getAuthorId())) {
             throw new UserNotFoundException(commentRequestDto.getAuthorId());
@@ -75,6 +79,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAuthority('comment:delete')")
     public void deleteCommentById(UUID id) {
         commentRepository.deleteById(id);
         log.info("Comment with id {} was deleted.", id);

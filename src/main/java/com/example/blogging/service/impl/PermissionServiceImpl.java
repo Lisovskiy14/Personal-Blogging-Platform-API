@@ -7,6 +7,7 @@ import com.example.blogging.service.PermissionService;
 import com.example.blogging.service.exception.notFound.impl.PermissionNotFoundException;
 import com.example.blogging.service.mapper.PermissionEntityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('permission:read')")
     public Set<Permission> getAllPermissions() {
         return permissionRepository.findAll().stream()
                 .map(permissionEntityMapper::toPermission)
@@ -29,12 +31,14 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('permission:read')")
     public Set<Permission> getPermissionsByRoleId(Long roleId) {
         return Set.of();
     }
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('permission:read')")
     public Permission getPermissionById(Long permissionId) {
         PermissionEntity permissionEntity = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new PermissionNotFoundException(permissionId));
@@ -43,6 +47,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAuthority('permission:read')")
     public Set<PermissionEntity> getAllPermissionsByIdSet(Set<Long> permissionIds) {
         Set<PermissionEntity> foundPermissions = permissionRepository.findAllByIdIn(permissionIds);
         if (foundPermissions.size() != permissionIds.size()) {

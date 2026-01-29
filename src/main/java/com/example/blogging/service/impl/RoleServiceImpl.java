@@ -42,7 +42,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('role:read')")
     public Set<Role> getAllRoles() {
         return roleRepository.findAll().stream()
                 .map(roleEntityMapper::toRole)
@@ -51,7 +51,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('role:read')")
     public Role getRoleById(Long roleId) {
         RoleEntity roleEntity = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RoleNotFoundException(roleId));
@@ -60,7 +60,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('role:read')")
     public Role getRoleByName(String roleName) {
         RoleEntity roleEntity = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RoleNotFoundException(roleName));
@@ -69,7 +69,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('role:write')")
     public Role createRole(RoleRequestDto roleRequestDto) {
         String formatterRoleName = Role.ROLE_PREFIX + roleRequestDto.getName().toUpperCase();
 
@@ -188,7 +188,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('role:delete')")
     public void deleteRoleById(Long roleId) {
         RoleEntity roleToDelete = roleRepository.findById(roleId)
                 .orElse(null);
